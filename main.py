@@ -51,6 +51,11 @@ class Wrapper:
                 self.proc.kill()
                 sys.exit(0)
 
+    def plot(self, function, length, material, material_data=0):
+        for i in range(length):
+            x, y, z = function(i)
+            self.send_to_server('setblock {} {} {} minecraft:{} {}'.format(x, y, z, material, material_data))
+
 if __name__ == '__main__':
     w = Wrapper()
     w.run()
