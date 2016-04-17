@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from time import strftime
+from math import *
 
 start_command = 'java -jar minecraft_server.1.9.2.jar nogui'
 
@@ -27,9 +28,33 @@ class Wrapper:
         self.proc.stdin.write(bytes(string + '\n', 'utf-8'))
         self.proc.stdin.flush()
 
+    def plot(self, function, length, material, material_data=0):
+        for i in range(int(length)):
+            x, y, z = function(i)
+            self.send_to_server('setblock {} {} {} minecraft:{} {}'.format(x, y, z, material, int(material_data)))
+
     def handle_command(self, command_text):
         self.log(command_text, COMMAND)
-        self.send_to_server(command_text)
+        command = command_text.split()[0]
+        args_str = command_text[len(command)+1:]
+        if command == 'plot':
+            brackets = 0
+            for i, c in enumerate(args_str):
+                if c == '(':
+                    brackets += 1
+                if c == ')':
+                    brackets -= 1
+                if brackets == 0:
+                    break
+            function_str = args_str[:i+1]
+            print(function_str)
+            other_args_str = args_str[i+1:]
+            print(other_args_str)
+            args = [eval(function_str)] + other_args_str.split()
+            print(args)
+            self.plot(*args)
+        else:
+            self.send_to_server(command_text)
 
     def handle_text(self, server_text):
         print(server_text)
