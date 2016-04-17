@@ -38,9 +38,10 @@ class Wrapper:
             command_text = player_text.lstrip(self.command_token)
             self.handle_command(command_text)
 
-    def log(self, message, type):
+    def log(self, message, message_type):
         time = strftime('%H:%M:%S')
-        print('[{}] [{} - {}]:  {}'.format(time, self.app_name, type, message))
+        print('[{}] [{} - {}]:  {}'.format(time, self.app_name, message_type, message))
+
 
     def run(self):
         while True:
