@@ -2,8 +2,7 @@ import subprocess
 import sys
 from time import strftime
 from math import *
-
-start_command = 'java -jar minecraft_server.1.9.2.jar nogui'
+from glob import glob
 
 COMMAND = 'COMMAND'
 SHUTDOWN = 'SHUTDOWN'
@@ -12,6 +11,8 @@ SHUTDOWN = 'SHUTDOWN'
 class Wrapper:
 
     def __init__(self):
+        server_jar = glob('minecraft_server*jar')[0]
+        start_command = 'java -jar {} nogui'.format(server_jar)
         self.proc = subprocess.Popen(start_command.split(),
                                      stdout=subprocess.PIPE,
                                      stdin=subprocess.PIPE,

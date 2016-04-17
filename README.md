@@ -2,6 +2,10 @@
 
 The _Minecraft Server Python Wrapper_.
 
+To run, simply download [mcspyw.py](https://github.com/JCGrant/MCSPyW/blob/master/mcspyw.py) and a [minecraft server](https://minecraft.net/download) to the same directory, and run
+
+    python mcspyw.py
+
 ## Gallery
 Here are some examples of what can be done using MCSPyW
 
