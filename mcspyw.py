@@ -52,10 +52,6 @@ class Wrapper:
             try:
                 server_text = self.read_from_server()
                 self.handle_text(server_text)
-    def plot(self, function, length, material, material_data=0):
-        for i in range(length):
-            x, y, z = function(i)
-            self.send_to_server('setblock {} {} {} minecraft:{} {}'.format(x, y, z, material, material_data))
             except (KeyboardInterrupt):
                 self.shutdown()
 
