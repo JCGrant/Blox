@@ -15,7 +15,8 @@ class Wrapper:
                                      stdout=subprocess.PIPE,
                                      stdin=subprocess.PIPE,
                                      stderr=subprocess.PIPE)
-        self.app_name = 'PMCSW'
+        print("Started Minecraft server with pid: {}".format(self.proc.pid))
+        self.app_name = 'MCSPyW'
         self.command_token = '!'
 
     def read_from_server(self):
