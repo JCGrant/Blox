@@ -5,8 +5,9 @@ import socket
 import subprocess
 
 MC_SERVER_DIR = 'mc-server'
+MC_SERVER_PROPERTIES_PATH = os.path.join(MC_SERVER_DIR, 'server.properties')
+
 WRAPPER_ADDRESS = (_, PORT) = '', 25565
-MC_SERVER_ADDRESS = '', 25564
 REQUEST_QUEUE_SIZE = 1024
 
 
@@ -24,9 +25,9 @@ def grim_reaper(signum, frame):
             return
 
 
-def handle_request(client_connection):
+def handle_request(client_connection, mc_server_address):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_connection:
-        server_connection.connect(MC_SERVER_ADDRESS)
+        server_connection.connect(mc_server_address)
 
         request = client_connection.recv(1024)
         print(b'req:' + request)
@@ -38,12 +39,12 @@ def handle_request(client_connection):
         print()
 
 
-def serve_forever():
+def serve_forever(mc_server_address):
     listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     listen_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     listen_socket.bind(WRAPPER_ADDRESS)
     listen_socket.listen(REQUEST_QUEUE_SIZE)
-    print('Serving HTTP on port {port} ...'.format(port=PORT))
+    print('Wrapper running on port {port}...'.format(port=PORT))
 
     signal.signal(signal.SIGCHLD, grim_reaper)
 
@@ -61,7 +62,7 @@ def serve_forever():
         pid = os.fork()
         if pid == 0:  # child
             listen_socket.close()  # close child copy
-            handle_request(client_connection)
+            handle_request(client_connection, mc_server_address)
             client_connection.close()
             os._exit(0)
         else:  # parent
@@ -74,9 +75,24 @@ def run_mc_server():
     return mc
 
 
+def read_properties_file(filepath):
+    with open(filepath) as f:
+        contents = f.read()
+    key_values = [row.split('=') for row in contents.split('\n')[2:-1]]
+    return {key: value for (key, value) in key_values}
+
+
 if __name__ == '__main__':
     try:
+        print('Starting Minecraft Server...')
         mc = run_mc_server()
-        serve_forever()
+        while True:
+            try:
+                mc_port = int(read_properties_file(MC_SERVER_PROPERTIES_PATH)['server-port'])
+                break
+            except (FileNotFoundError, KeyError):
+                continue
+        mc_server_address = '', mc_port
+        serve_forever(mc_server_address)
     except:
         mc.send_signal(signal.SIGINT)

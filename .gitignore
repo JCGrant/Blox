@@ -6,6 +6,7 @@ __pycache__
 banned-ips.json
 banned-players.json
 ops.json
+server.properties
 usercache.json
 whitelist.json
 world
