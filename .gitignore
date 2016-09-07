@@ -1,2 +1,11 @@
 __pycache__
 *.pyc
+.DS_Store
+*logs
+*.jar
+banned-ips.json
+banned-players.json
+ops.json
+usercache.json
+whitelist.json
+world
