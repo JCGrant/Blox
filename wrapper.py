@@ -2,7 +2,9 @@ import errno
 import os
 import signal
 import socket
+import subprocess
 
+MC_SERVER_DIR = 'mc-server'
 WRAPPER_ADDRESS = (_, PORT) = '', 25565
 MC_SERVER_ADDRESS = '', 25564
 REQUEST_QUEUE_SIZE = 1024
@@ -65,5 +67,16 @@ def serve_forever():
         else:  # parent
             client_connection.close()  # close parent copy and loop over
 
+
+def run_mc_server():
+    run_command = 'java -Xmx1024M -Xms1024M -jar minecraft_server.1.10.2.jar nogui'
+    mc = subprocess.Popen(run_command.split(), cwd=MC_SERVER_DIR)
+    return mc
+
+
 if __name__ == '__main__':
-    serve_forever()
+    try:
+        mc = run_mc_server()
+        serve_forever()
+    except:
+        mc.send_signal(signal.SIGINT)
