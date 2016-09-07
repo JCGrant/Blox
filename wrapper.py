@@ -23,15 +23,17 @@ def grim_reaper(signum, frame):
 
 
 def handle_request(client_connection):
-    request = client_connection.recv(1024)
-    print(b'req:' + request)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_connection:
         server_connection.connect(MC_SERVER_ADDRESS)
+
+        request = client_connection.recv(1024)
+        print(b'req:' + request)
         server_connection.send(request)
 
         response = server_connection.recv(1024)
         print(b'res:' + response)
         client_connection.send(response)
+        print()
 
 
 def serve_forever():
