@@ -5,6 +5,7 @@ __pycache__
 *.jar
 banned-ips.json
 banned-players.json
+eula.txt
 ops.json
 server.properties
 usercache.json
