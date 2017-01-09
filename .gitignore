@@ -1,13 +1,5 @@
 __pycache__
 *.pyc
+
 .DS_Store
-*logs
-*.jar
-banned-ips.json
-banned-players.json
-eula.txt
-ops.json
-server.properties
-usercache.json
-whitelist.json
-world
+mc-server
