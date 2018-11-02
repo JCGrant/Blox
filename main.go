@@ -65,17 +65,28 @@ func parseCmdOutput(r io.Reader, w io.Writer) {
 		line := string(lineBytes)
 		fmt.Println(line)
 
-		commandTokens := strings.Split(line, " ")[4:]
-		command, args := commandTokens[0], commandTokens[1:]
-		if isCommand(command) {
-			command = strings.TrimPrefix(command, commandChar)
+		command, args, isCommand := parseLine(line)
+		if isCommand {
 			handleCommand(command, args, w)
 		}
 	}
 }
 
-func isCommand(command string) bool {
-	return strings.HasPrefix(command, commandChar)
+func parseLine(line string) (string, []string, bool) {
+	tokens := strings.Split(line, " ")
+	if len(tokens) < 5 {
+		return "", nil, false
+	}
+	command := tokens[4]
+	if !strings.HasPrefix(command, commandChar) {
+		return "", nil, false
+	}
+	command = strings.TrimPrefix(command, commandChar)
+	var args []string
+	if len(tokens) > 5 {
+		args = tokens[5:]
+	}
+	return command, args, true
 }
 
 func handleCommand(command string, args []string, w io.Writer) {
