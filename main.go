@@ -99,6 +99,8 @@ func handleCommand(command string, args []string, w io.Writer) {
 	switch command {
 	case "time":
 		handleTimeCommand(args, w)
+		//case "plot":
+		//handlePlotCommand(args, w)
 	}
 }
 
@@ -110,3 +112,18 @@ func handleTimeCommand(args []string, w io.Writer) {
 	fmt.Fprintf(w, "say setting time to %s\n", timeStr)
 	fmt.Fprintf(w, "time set %s\n", timeStr)
 }
+
+//func handlePlotCommand(args []string, w io.Writer) {
+//block := args[0]
+//oldBlockHandling := "replace"
+//plot := plotter.FromString(strings.Join(args[1:], " "))
+//fmt.Fprintf(w, "say plotting function")
+//for i := plot.Xs.Start; i < plot.Xs.End; i++ {
+//for j := plot.Ys.Start; j < plot.Ys.End; j++ {
+//for k := plot.Zs.Start; k < plot.Zs.End; k++ {
+//x, y, z := plot.Eval(i, j, k)
+//fmt.Fprintf(w, "setblock %d %d %d minecraft:%s %s\n", x, y, z, block, oldBlockHandling)
+//}
+//}
+//}
+//}
