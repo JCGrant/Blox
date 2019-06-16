@@ -9,6 +9,8 @@ import (
 	"github.com/alecthomas/participle/lexer/ebnf"
 )
 
+type env map[string]interface{}
+
 type function struct {
 	Expressions expressions  `@@`
 	Ranges      []identRange `"|" @@ ("," @@)*`

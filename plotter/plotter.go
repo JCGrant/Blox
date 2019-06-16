@@ -1,7 +1,5 @@
 package plotter
 
-type env map[string]interface{}
-
 type Range struct {
 	Start int
 	End   int
