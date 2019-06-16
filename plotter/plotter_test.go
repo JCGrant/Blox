@@ -227,3 +227,86 @@ func TestEvalExpression(t *testing.T) {
 		t.Errorf("%f != %f", actual, expected)
 	}
 }
+
+func TestMergeEnvs(t *testing.T) {
+	actual := mergeEnvs(env{"i": 1}, env{"j": 2})
+	expected := env{"i": 1, "j": 2}
+	if diff := deep.Equal(actual, expected); diff != nil {
+		t.Error(diff)
+	}
+}
+
+func TestMergeListsOfEnvs(t *testing.T) {
+	actual := mergeListsOfEnvs(
+		[]env{
+			{"i": 1},
+			{"i": 2},
+		},
+		[]env{
+			{"j": 1},
+			{"j": 2},
+		},
+	)
+	expected := []env{
+		{"i": 1, "j": 1},
+		{"i": 1, "j": 2},
+		{"i": 2, "j": 1},
+		{"i": 2, "j": 2},
+	}
+	if diff := deep.Equal(actual, expected); diff != nil {
+		t.Error(diff)
+	}
+}
+
+func TestEvalFunction(t *testing.T) {
+	ast := function{
+		Expressions: expressions{
+			X: expression{
+				Left: term{
+					Left: factor{
+						Base: value{
+							Ident: pS("i"),
+						},
+					},
+				},
+			},
+			Y: expression{
+				Left: term{
+					Left: factor{
+						Base: value{
+							Ident: pS("j"),
+						},
+					},
+				},
+			},
+			Z: expression{
+				Left: term{
+					Left: factor{
+						Base: value{
+							Ident: pS("k"),
+						},
+					},
+				},
+			},
+		},
+		Ranges: []identRange{
+			identRange{Ident: "i", Start: 1, End: 2},
+			identRange{Ident: "j", Start: 1, End: 2},
+			identRange{Ident: "k", Start: 1, End: 2},
+		},
+	}
+	actual := ast.eval(nil)
+	expected := []coord{
+		{1, 1, 1},
+		{1, 1, 2},
+		{1, 2, 1},
+		{1, 2, 2},
+		{2, 1, 1},
+		{2, 1, 2},
+		{2, 2, 1},
+		{2, 2, 2},
+	}
+	if diff := deep.Equal(actual, expected); diff != nil {
+		t.Error(diff)
+	}
+}
