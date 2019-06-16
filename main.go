@@ -107,7 +107,7 @@ func handleCommand(command string, args []string, w io.Writer) {
 func handleTimeCommand(args []string, w io.Writer) {
 	timeStr := "0"
 	if len(args) > 0 {
-		timeStr = args[1]
+		timeStr = args[0]
 	}
 	fmt.Fprintf(w, "say setting time to %s\n", timeStr)
 	fmt.Fprintf(w, "time set %s\n", timeStr)
