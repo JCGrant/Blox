@@ -126,7 +126,11 @@ func (v value) eval(e env) float64 {
 		}
 		valueNum, ok := value.(float64)
 		if !ok {
-			panic(fmt.Sprint(*v.Ident, " is not a number"))
+			valueNumInt, ok := value.(int)
+			if !ok {
+				panic(fmt.Sprint(*v.Ident, " is not a number"))
+			}
+			valueNum = float64(valueNumInt)
 		}
 		return valueNum
 	}

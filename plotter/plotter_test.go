@@ -157,3 +157,36 @@ func TestParser(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestEvalExpression(t *testing.T) {
+	exp := expression{
+		Left: term{
+			Left: factor{
+				Base: value{
+					Number: pF(-240),
+				},
+			},
+		},
+		Right: []opTerm{
+			{
+				Operator: opSub,
+				Term: term{
+					Left: factor{
+						Base: value{
+							Ident: pS("i"),
+						},
+					},
+				},
+			},
+		},
+	}
+	e := env{
+		"i": 20,
+	}
+
+	actual := exp.eval(e)
+	expected := -260.0
+	if actual != expected {
+		t.Errorf("%f != %f", actual, expected)
+	}
+}
