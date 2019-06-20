@@ -1,6 +1,7 @@
 package plotter
 
 import (
+	"math"
 	"testing"
 
 	"github.com/go-test/deep"
@@ -163,17 +164,50 @@ func TestEvalExpression(t *testing.T) {
 		Left: term{
 			Left: factor{
 				Base: value{
-					Number: pF(-240),
+					Number: pF(110),
 				},
 			},
 		},
 		Right: []opTerm{
 			{
-				Operator: opSub,
+				Operator: opAdd,
 				Term: term{
 					Left: factor{
 						Base: value{
-							Ident: pS("i"),
+							Number: pF(10),
+						},
+					},
+					Right: []opFactor{
+						{
+							Operator: opMul,
+							Factor: factor{
+								Base: value{
+									Call: &call{
+										Name: "sin",
+										Args: []expression{
+											expression{
+												Left: term{
+													Left: factor{
+														Base: value{
+															Ident: pS("i"),
+														},
+													},
+													Right: []opFactor{
+														{
+															Operator: opDiv,
+															Factor: factor{
+																Base: value{
+																	Number: pF(5),
+																},
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -182,11 +216,14 @@ func TestEvalExpression(t *testing.T) {
 	}
 	e := env{
 		"i": 20,
+		"sin": func(fs ...float64) float64 {
+			return math.Sin(fs[0])
+		},
 	}
 
 	actual := exp.eval(e)
-	expected := -260.0
-	if actual != expected {
+	expected := 102.431975047
+	if math.Abs(actual-expected) >= 0.000001 {
 		t.Errorf("%f != %f", actual, expected)
 	}
 }
