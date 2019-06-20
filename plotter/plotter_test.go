@@ -314,3 +314,46 @@ func TestEvalFunction(t *testing.T) {
 		t.Error(diff)
 	}
 }
+
+func TestOneArgPreludeFuncs(t *testing.T) {
+	tests := []struct {
+		fnName string
+		result float64
+	}{
+		{"sin", -0.95892427466},
+		{"cos", 0.28366218546},
+	}
+	for _, test := range tests {
+		t.Run(test.fnName, func(t *testing.T) {
+			exp := expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
+							Call: &call{
+								Name: pS(test.fnName),
+								Args: []*expression{
+									&expression{
+										Left: &term{
+											Left: &factor{
+												Base: &value{
+													Number: pF(5),
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+
+			actual := exp.eval(prelude)
+			expected := test.result
+			if math.Abs(actual-expected) >= 0.000001 {
+				t.Errorf("%f != %f", actual, expected)
+			}
+		})
+
+	}
+}
