@@ -25,6 +25,6 @@ func Parse(plotStr string) ([]coord, error) {
 			return nil, fmt.Errorf("range %d is malformed", i+1)
 		}
 	}
-	coords := ast.eval(nil)
+	coords := ast.eval(prelude)
 	return coords, nil
 }
