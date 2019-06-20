@@ -16,6 +16,7 @@ import (
 var minecraftServerDir = "mc-server"
 var minecraftServerRunParams = "-Xmx1024M -Xms1024M -jar server.jar nogui"
 var commandChar = "!"
+var exampleUsage = "!plot block x-expression, y-expression, z-expression | i <- 1..10"
 
 type minecraftLogger struct {
 }
@@ -116,9 +117,17 @@ func handleTimeCommand(args []string, w io.Writer) {
 }
 
 func handlePlotCommand(args []string, w io.Writer) {
+	if len(args) < 2 {
+		fmt.Fprintf(w, "say usage: %s\n", exampleUsage)
+		return
+	}
 	block := args[0]
 	oldBlockHandling := "replace"
-	coords := plotter.Parse(strings.Join(args[1:], " "))
+	coords, err := plotter.Parse(strings.Join(args[1:], " "))
+	if err != nil {
+		fmt.Fprintf(w, "say parsing plot failed: %s\n", err)
+		return
+	}
 	fmt.Fprintf(w, "say plotting function\n")
 	for _, c := range coords {
 		x, y, z := int(c.X), int(c.Y), int(c.Z)

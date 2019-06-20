@@ -11,7 +11,11 @@ func pS(s string) *string {
 	return &s
 }
 
-func pF(i float64) *float64 {
+func pF(f float64) *float64 {
+	return &f
+}
+
+func pI(i int) *int {
 	return &i
 }
 
@@ -19,21 +23,21 @@ func TestParser(t *testing.T) {
 	input := "-240 - i, 110 + 10 * sin(i / 5), -270 + 10 * cos(i / 5) | i <- 1..100"
 	actual := parse(input)
 	expected := function{
-		Expressions: expressions{
-			X: expression{
-				Left: term{
-					Left: factor{
-						Base: value{
+		Expressions: &expressions{
+			X: &expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
 							Number: pF(-240),
 						},
 					},
 				},
-				Right: []opTerm{
+				Right: []*opTerm{
 					{
 						Operator: opSub,
-						Term: term{
-							Left: factor{
-								Base: value{
+						Term: &term{
+							Left: &factor{
+								Base: &value{
 									Ident: pS("i"),
 								},
 							},
@@ -41,43 +45,43 @@ func TestParser(t *testing.T) {
 					},
 				},
 			},
-			Y: expression{
-				Left: term{
-					Left: factor{
-						Base: value{
+			Y: &expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
 							Number: pF(110),
 						},
 					},
 				},
-				Right: []opTerm{
+				Right: []*opTerm{
 					{
 						Operator: opAdd,
-						Term: term{
-							Left: factor{
-								Base: value{
+						Term: &term{
+							Left: &factor{
+								Base: &value{
 									Number: pF(10),
 								},
 							},
-							Right: []opFactor{
+							Right: []*opFactor{
 								{
 									Operator: opMul,
-									Factor: factor{
-										Base: value{
+									Factor: &factor{
+										Base: &value{
 											Call: &call{
-												Name: "sin",
-												Args: []expression{
-													expression{
-														Left: term{
-															Left: factor{
-																Base: value{
+												Name: pS("sin"),
+												Args: []*expression{
+													&expression{
+														Left: &term{
+															Left: &factor{
+																Base: &value{
 																	Ident: pS("i"),
 																},
 															},
-															Right: []opFactor{
+															Right: []*opFactor{
 																{
 																	Operator: opDiv,
-																	Factor: factor{
-																		Base: value{
+																	Factor: &factor{
+																		Base: &value{
 																			Number: pF(5),
 																		},
 																	},
@@ -95,43 +99,43 @@ func TestParser(t *testing.T) {
 					},
 				},
 			},
-			Z: expression{
-				Left: term{
-					Left: factor{
-						Base: value{
+			Z: &expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
 							Number: pF(-270),
 						},
 					},
 				},
-				Right: []opTerm{
+				Right: []*opTerm{
 					{
 						Operator: opAdd,
-						Term: term{
-							Left: factor{
-								Base: value{
+						Term: &term{
+							Left: &factor{
+								Base: &value{
 									Number: pF(10),
 								},
 							},
-							Right: []opFactor{
+							Right: []*opFactor{
 								{
 									Operator: opMul,
-									Factor: factor{
-										Base: value{
+									Factor: &factor{
+										Base: &value{
 											Call: &call{
-												Name: "cos",
-												Args: []expression{
-													expression{
-														Left: term{
-															Left: factor{
-																Base: value{
+												Name: pS("cos"),
+												Args: []*expression{
+													&expression{
+														Left: &term{
+															Left: &factor{
+																Base: &value{
 																	Ident: pS("i"),
 																},
 															},
-															Right: []opFactor{
+															Right: []*opFactor{
 																{
 																	Operator: opDiv,
-																	Factor: factor{
-																		Base: value{
+																	Factor: &factor{
+																		Base: &value{
 																			Number: pF(5),
 																		},
 																	},
@@ -150,8 +154,8 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
-		Ranges: []identRange{
-			identRange{Ident: "i", Start: 1, End: 100},
+		Ranges: []*identRange{
+			&identRange{Ident: pS("i"), Start: pI(1), End: pI(100)},
 		},
 	}
 	if diff := deep.Equal(actual, expected); diff != nil {
@@ -161,42 +165,42 @@ func TestParser(t *testing.T) {
 
 func TestEvalExpression(t *testing.T) {
 	exp := expression{
-		Left: term{
-			Left: factor{
-				Base: value{
+		Left: &term{
+			Left: &factor{
+				Base: &value{
 					Number: pF(110),
 				},
 			},
 		},
-		Right: []opTerm{
+		Right: []*opTerm{
 			{
 				Operator: opAdd,
-				Term: term{
-					Left: factor{
-						Base: value{
+				Term: &term{
+					Left: &factor{
+						Base: &value{
 							Number: pF(10),
 						},
 					},
-					Right: []opFactor{
+					Right: []*opFactor{
 						{
 							Operator: opMul,
-							Factor: factor{
-								Base: value{
+							Factor: &factor{
+								Base: &value{
 									Call: &call{
-										Name: "sin",
-										Args: []expression{
-											expression{
-												Left: term{
-													Left: factor{
-														Base: value{
+										Name: pS("sin"),
+										Args: []*expression{
+											&expression{
+												Left: &term{
+													Left: &factor{
+														Base: &value{
 															Ident: pS("i"),
 														},
 													},
-													Right: []opFactor{
+													Right: []*opFactor{
 														{
 															Operator: opDiv,
-															Factor: factor{
-																Base: value{
+															Factor: &factor{
+																Base: &value{
 																	Number: pF(5),
 																},
 															},
@@ -260,39 +264,39 @@ func TestMergeListsOfEnvs(t *testing.T) {
 
 func TestEvalFunction(t *testing.T) {
 	ast := function{
-		Expressions: expressions{
-			X: expression{
-				Left: term{
-					Left: factor{
-						Base: value{
+		Expressions: &expressions{
+			X: &expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
 							Ident: pS("i"),
 						},
 					},
 				},
 			},
-			Y: expression{
-				Left: term{
-					Left: factor{
-						Base: value{
+			Y: &expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
 							Ident: pS("j"),
 						},
 					},
 				},
 			},
-			Z: expression{
-				Left: term{
-					Left: factor{
-						Base: value{
+			Z: &expression{
+				Left: &term{
+					Left: &factor{
+						Base: &value{
 							Ident: pS("k"),
 						},
 					},
 				},
 			},
 		},
-		Ranges: []identRange{
-			identRange{Ident: "i", Start: 1, End: 2},
-			identRange{Ident: "j", Start: 1, End: 2},
-			identRange{Ident: "k", Start: 1, End: 2},
+		Ranges: []*identRange{
+			&identRange{Ident: pS("i"), Start: pI(1), End: pI(2)},
+			&identRange{Ident: pS("j"), Start: pI(1), End: pI(2)},
+			&identRange{Ident: pS("k"), Start: pI(1), End: pI(2)},
 		},
 	}
 	actual := ast.eval(nil)

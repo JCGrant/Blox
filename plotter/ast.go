@@ -32,8 +32,8 @@ func mergeListsOfEnvs(es1, es2 []env) (es []env) {
 }
 
 type function struct {
-	Expressions expressions  `@@`
-	Ranges      []identRange `"|" @@ ("," @@)*`
+	Expressions *expressions  `@@`
+	Ranges      []*identRange `"|" @@ ("," @@)*`
 }
 
 type coord struct {
@@ -59,27 +59,27 @@ func (f function) eval(globals env) (cs []coord) {
 }
 
 type expressions struct {
-	X expression `@@`
-	Y expression `"," @@`
-	Z expression `"," @@`
+	X *expression `@@`
+	Y *expression `"," @@`
+	Z *expression `"," @@`
 }
 
 type identRange struct {
-	Ident string `@Ident`
-	Start int    `"<" "-" @Number`
-	End   int    `"." "." @Number`
+	Ident *string `@Ident`
+	Start *int    `"<" "-" @Number`
+	End   *int    `"." "." @Number`
 }
 
 func (r identRange) eval() (xs []env) {
-	for i := r.Start; i <= r.End; i++ {
-		xs = append(xs, env{r.Ident: float64(i)})
+	for i := *r.Start; i <= *r.End; i++ {
+		xs = append(xs, env{*r.Ident: float64(i)})
 	}
 	return
 }
 
 type expression struct {
-	Left  term     `@@`
-	Right []opTerm `{ @@ }`
+	Left  *term     `@@`
+	Right []*opTerm `{ @@ }`
 }
 
 func (ex expression) eval(e env) float64 {
@@ -91,8 +91,8 @@ func (ex expression) eval(e env) float64 {
 }
 
 type term struct {
-	Left  factor     `@@`
-	Right []opFactor `{ @@ }`
+	Left  *factor     `@@`
+	Right []*opFactor `{ @@ }`
 }
 
 func (t term) eval(e env) float64 {
@@ -104,7 +104,7 @@ func (t term) eval(e env) float64 {
 }
 
 type factor struct {
-	Base     value  `@@`
+	Base     *value `@@`
 	Exponent *value `[ "^" @@ ]`
 }
 
@@ -148,12 +148,12 @@ func (o operator) eval(l, r float64) float64 {
 
 type opTerm struct {
 	Operator operator `@("+" | "-")`
-	Term     term     `@@`
+	Term     *term    `@@`
 }
 
 type opFactor struct {
 	Operator operator `@("*" | "/")`
-	Factor   factor   `@@`
+	Factor   *factor  `@@`
 }
 
 type value struct {
@@ -192,12 +192,12 @@ func (v value) eval(e env) float64 {
 }
 
 type call struct {
-	Name string       `@Ident`
-	Args []expression `"(" [ @@ { "," @@ } ] ")"`
+	Name *string       `@Ident`
+	Args []*expression `"(" [ @@ { "," @@ } ] ")"`
 }
 
 func (c call) eval(e env) float64 {
-	value, ok := e[c.Name]
+	value, ok := e[*c.Name]
 	if !ok {
 		panic(fmt.Sprint("undefined function: ", c.Name))
 	}
