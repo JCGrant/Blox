@@ -12,8 +12,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer w.Stdout.Close()
-	defer w.Stdin.Close()
+	defer w.Stop()
 
 	go router.ParseCmdOutput(w.Stdout, w.Stdin)
 

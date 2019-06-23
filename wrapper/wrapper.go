@@ -53,7 +53,7 @@ func New() (*Wrapper, error) {
 
 // Start starts the Minecraft Server process
 func (w *Wrapper) Start() error {
-	// Allow user to write to Minecraft Process via Wrapper
+	// Allows the user to write to the Minecraft process
 	go io.Copy(w.Stdin, os.Stdin)
 	err := w.cmd.Start()
 	if err != nil {
@@ -63,6 +63,14 @@ func (w *Wrapper) Start() error {
 	if err != nil {
 		return errors.Wrap(err, "waiting for Minecraft to exit failed")
 	}
+	return nil
+}
+
+// Stop stops the Minecraft Server process
+func (w *Wrapper) Stop() error {
+	w.Stdout.Close()
+	w.Stdin.Close()
+	w.cmd.Process.Kill()
 	return nil
 }
 
